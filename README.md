@@ -4,9 +4,9 @@
 
 <img src="https://img.shields.io/badge/postgreSQL-14.0-brightgreen">
 
-<img src="https://img.shields.io/badge/PGAdmin-4.0-brightgreen">
+<img src="https://img.shields.io/badge/pgAdmin-4.0-brightgreen">
 
-<img src="https://img.shields.io/badge/made by-Breakhead2-brightgreen">
+<img src="https://img.shields.io/badge/made by-Denis Sazonov-brightgreen">
 
 </p>
 
@@ -248,8 +248,7 @@ CREATE TABLE songs_users (
 ## Генерация данных
 
 Для генерации данных наших таблиц воспользуемся сервисом [_generatedata.com_](https://generatedata.com/).
-Дамп заполненой базы данных находится в данном репозитории под именем **_itunes.dump.sql_**.
-Или скачайте его с [google drive](https://drive.google.com/file/d/1W5_jGxPoOmsPJI6FotMgRoBLtDbiAByd/view?usp=sharing).
+Дамп базы данных с тестовыми данными находится в репозитории под именем [_itunes.dump.sql_](https://github.com/Breakhead2/itunesDB_project/blob/main/itunes.dump.sql) или можного его скачать с [_google drive_](https://drive.google.com/file/d/1W5_jGxPoOmsPJI6FotMgRoBLtDbiAByd/view?usp=sharing).
 
 ## Создание внешних ключей
 
@@ -645,4 +644,140 @@ _ERROR: Sorry. This user doesnt exists.Rechecking your arguments_
 
 ## Оптимизация запросов
 
-## Ссылки на материалы репозитория
+Рассмотрим эффективность ранее выполненых сложных запросов с использованием объединения JOIN и попробуем их проанализировать и оптимизировать.
+
+Я буду разбирать запрос на 10 самых популярых песен у пользователя.
+
+Для начала посмотрим на _актуальный_ план построения запроса и разберем его, выполнив команду:
+
+```sql
+EXPLAIN ANALYZE SELECT
+	songs.singer as songs_singer,
+	songs.name as songs_name,
+	songs.listening_counter as listening_counter
+	FROM songs_users
+		JOIN songs ON songs_users.song_id = songs.id
+		LEFT JOIN users ON songs_users.user_id = users.id
+	WHERE users.first_name = 'Riley' AND users.last_name = 'Farmer'
+ORDER BY songs.listening_counter DESC
+LIMIT 10;
+```
+
+В результате выполнения команды получим древовидную структуру запроса, состоящую из узлов, где каждый узел соотвествует определенной части запроса.
+
+```sql
+                                                             QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=6.12..6.12 rows=1 width=38) (actual time=0.099..0.101 rows=3 loops=1)
+   ->  Sort  (cost=6.12..6.12 rows=1 width=38) (actual time=0.098..0.100 rows=3 loops=1)
+         Sort Key: songs.listening_counter DESC
+         Sort Method: quicksort  Memory: 25kB
+         ->  Nested Loop  (cost=3.66..6.11 rows=1 width=38) (actual time=0.070..0.093 rows=3 loops=1)
+               ->  Hash Join  (cost=3.51..5.79 rows=1 width=4) (actual time=0.062..0.079 rows=3 loops=1)
+                     Hash Cond: (songs_users.user_id = users.id)
+                     ->  Seq Scan on songs_users  (cost=0.00..2.00 rows=100 width=8) (actual time=0.007..0.015 rows=100 loops=1)
+                     ->  Hash  (cost=3.50..3.50 rows=1 width=4) (actual time=0.034..0.034 rows=1 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           ->  Seq Scan on users  (cost=0.00..3.50 rows=1 width=4) (actual time=0.011..0.030 rows=1 loops=1)
+                                 Filter: (((first_name)::text = 'Riley'::text) AND ((last_name)::text = 'Farmer'::text))
+                                 Rows Removed by Filter: 99
+               ->  Index Scan using songs_pkey on songs  (cost=0.14..0.32 rows=1 width=42) (actual time=0.003..0.003 rows=1 loops=3)
+                     Index Cond: (id = songs_users.song_id)
+ Planning Time: 0.394 ms
+ Execution Time: 0.138 ms
+```
+
+### Анализ запроса
+
+Видим, что планируемое время выполнения запроса _(Planning Time)_ значительно больше актуального _(Execution Time)_, так же видим отличия в общей стоимости запроса и количестве выводимых строк:
+
+- _(cost=**6.12..6.12** rows=**1** width=38)_ - планируемая,
+- _(actual time=**0.099..0.101** rows=**3** loops=1)_ - действительная.
+
+Проанализируем узлы запроса по актуальной информации, не обращая внимание на ожидаемые данные.
+
+#### Рассмотрим узел выборки по таблице «Пользователи» с фильтрацией по имени и фамилии
+
+```sql
+->  Seq Scan on users  (cost=0.00..3.50 rows=1 width=4) (actual time=0.011..0.030 rows=1 loops=1)
+      Filter: (((first_name)::text = 'Riley'::text) AND ((last_name)::text = 'Farmer'::text))
+      Rows Removed by Filter: 99
+```
+
+Проанализируем узел:
+
+- используется последовательное сканирование _Seq Scan_ по таблице _«Пользователи»_, что в данной ситуации плохо, так как нам нужна всего одна строка;
+
+- актуальная стоимость подготовки запроса равна 0.011, актуальная стоимость выполнения запроса равна 0.030;
+
+- выбрана 1 строка.
+
+#### Рассмотрим узел выборки по таблице связи «Песни - Пользователи»
+
+```sql
+->  Seq Scan on songs_users  (cost=0.00..2.00 rows=100 width=8) (actual time=0.007..0.015 rows=100 loops=1)
+Hash  (cost=3.50..3.50 rows=1 width=4) (actual time=0.034..0.034 rows=1 loops=1)
+  Buckets: 1024  Batches: 1  Memory Usage: 9kB
+```
+
+Проанализируем узел:
+
+- используется последовательное сканирование _Seq Scan_ по таблице _«Песни - Пользователи»_, что нормально, так как нам нужны все строки;
+
+- актуальная стоимость подготовки запроса равна 0.007, актуальная стоимость выполнения запроса равна 0.015;
+
+- выбрано 100 строк.
+
+#### Рассмотрим узел выборки по таблице связи «Песни»
+
+```sql
+->  Index Scan using songs_pkey on songs  (cost=0.14..0.32 rows=1 width=42) (actual time=0.003..0.003 rows=1 loops=3)
+      Index Cond: (id = songs_users.song_id)
+```
+
+Проанализируем узел:
+
+- используется индексное сканирование _Index Scan_ по таблице _«Песни»_, что хорошо;
+
+- актуальная стоимость подготовки запроса равна 0.003, актуальная стоимость выполнения запроса равна 0.003;
+
+- выбрано 1 строк.
+
+#### Рассмотрим последний узел - узел сортировки
+
+```sql
+->  Sort  (cost=6.12..6.12 rows=1 width=38) (actual time=0.098..0.100 rows=3 loops=1)
+      Sort Key: songs.listening_counter DESC
+      Sort Method: quicksort  Memory: 25kB
+```
+
+Проанализируем узел:
+
+- используется сортировка по ключу _songs.listening_counter_ от большего к меньшему.
+
+- актуальная стоимость подготовки запроса равна 0.098, актуальная стоимость выполнения запроса равна 0.100;
+
+- выбрано 3 строк.
+
+### Оптимизация запроса
+
+Исходя из проведенного анализа запроса, можно сделать вывод, что как минимум один узел работает плохо. Это узел выборки по таблице «Пользователи» с фильтрацией по имени и фамилии, так как там выборка данных осуществляется последовательным сканированием, при условии что нам нужна всего одна строка.
+
+Для решения данной проблемы воспользуемся индексами. Создадим для колонок _имя_ и _фамилия_ таблицы _«Пользователи»_ составной индекс.
+
+```sql
+CREATE INDEX users_first_name_last_name_idx ON users (first_name, last_name);
+```
+
+Снова выполним актуальный план выполнения для нашего запроса и посмотрим результаты.
+
+## Список команд используемых в данном проекте
+
+- [_Команды создания таблиц_](./1_Create_tables_command.txt)
+- [_Команды создание внешних ключей_](./2_Foreign_keys_command.txt)
+- [_Команды создания сложных запросов с использованием подзапросов_](./3_Multytable_selects_without_JOIN.txt)
+- [_Команды создания сложных запросов с использованием объединения JOIN и без использования подзапросов_](./4_Multytable_selects_with_JOIN.txt)
+- [_Команды создания представлений_](./5_Views.txt)
+- [_Команда создания пользовательской функции_](./6_Custom_function.txt)
+- [_Команда создания триггера_](./7_Trigger.txt)
+- [_Команда создания плана выполения запроса_](./8_Optimization_selects.txt)
