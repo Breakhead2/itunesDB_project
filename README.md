@@ -759,7 +759,7 @@ Hash  (cost=3.50..3.50 rows=1 width=4) (actual time=0.034..0.034 rows=1 loops=1)
 
 - выбрано 3 строк.
 
-### Оптимизация запроса
+### Пути оптимизации запроса
 
 Исходя из проведенного анализа запроса, можно сделать вывод, что как минимум один узел работает плохо. Это узел выборки по таблице «Пользователи» с фильтрацией по имени и фамилии, так как там выборка данных осуществляется последовательным сканированием, при условии что нам нужна всего одна строка.
 
@@ -769,7 +769,48 @@ Hash  (cost=3.50..3.50 rows=1 width=4) (actual time=0.034..0.034 rows=1 loops=1)
 CREATE INDEX users_first_name_last_name_idx ON users (first_name, last_name);
 ```
 
+Предварительно отключим последовательное сканирование явным образом
+
+```sql
+itunes=# SET enable_seqscan TO OFF;
+```
+
 Снова выполним актуальный план выполнения для нашего запроса и посмотрим результаты.
+
+```sql
+                                                                     QUERY PLAN
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=10000000018.98..10000000018.98 rows=1 width=38) (actual time=168.221..168.224 rows=3 loops=1)
+   ->  Sort  (cost=10000000018.98..10000000018.98 rows=1 width=38) (actual time=0.147..0.148 rows=3 loops=1)
+         Sort Key: songs.listening_counter DESC
+         Sort Method: quicksort  Memory: 25kB
+         ->  Nested Loop  (cost=10000000000.28..10000000018.97 rows=1 width=38) (actual time=0.095..0.133 rows=3 loops=1)
+               ->  Nested Loop  (cost=10000000000.14..10000000018.65 rows=1 width=4) (actual time=0.077..0.109 rows=3 loops=1)
+                     Join Filter: (songs_users.user_id = users.id)
+                     Rows Removed by Join Filter: 97
+                     ->  Seq Scan on songs_users  (cost=10000000000.00..10000000002.00 rows=100 width=8) (actual time=0.015..0.023 rows=100 loops=1)
+                     ->  Materialize  (cost=0.14..15.15 rows=1 width=4) (actual time=0.000..0.001 rows=1 loops=100)
+                           ->  Index Scan using users_pkey on users  (cost=0.14..15.14 rows=1 width=4) (actual time=0.033..0.044 rows=1 loops=1)
+                                 Filter: (((first_name)::text = 'Riley'::text) AND ((last_name)::text = 'Farmer'::text))
+                                 Rows Removed by Filter: 99
+               ->  Index Scan using songs_pkey on songs  (cost=0.14..0.32 rows=1 width=42) (actual time=0.004..0.004 rows=1 loops=3)
+                     Index Cond: (id = songs_users.song_id)
+ Planning Time: 0.627 ms
+ JIT:
+   Functions: 15
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+   Timing: Generation 2.309 ms, Inlining 28.616 ms, Optimization 92.203 ms, Emission 47.265 ms, Total 170.394 ms
+ Execution Time: 170.655 ms
+```
+
+Результы получились, прямо противоположные от ожидаемых. Да, мы видим, что выборка по пользователям теперь выполняется по индексам, а не последовательно, но в целом весь запрос выполняется намного дольше.
+
+В результате можно сделать следующие выводы:
+
+- в этих таблицах всего по 100 строк, но если бы данных было значительно больше то планировщик мог выбрать совершенно другой план выполнения, в том числе задействовав другие доступные индексы;
+
+- не имеет смысла оптимизировать запросы на данных, которые сильно отличаются от
+  используемых в рабочем приложении.
 
 ## Список команд используемых в данном проекте
 
