@@ -1,0 +1,36 @@
+--Реализум триггер на проверку существует ли пользователь в базе данных при создании плейлиста.
+--Если такой пользователь существует то создаем плейлист, если нет
+--выдаем ошибку "Такого пользователя не существует. Перепроверьте данные".
+
+--Напишем функцию проверки существует ли пользователь в базе данных.
+
+CREATE OR REPLACE FUNCTION checking_user()
+RETURNS TRIGGER AS
+$$
+DECLARE is_user BOOLEAN;
+BEGIN
+	IF NOT EXISTS (SELECT users.id FROM users WHERE id = NEW.creator_id)
+	THEN
+		RAISE EXCEPTION 'Sorry. This user doesnt exists.Rechecking your arguments';
+	END IF;
+	RETURN NEW;
+END;
+$$
+LANGUAGE PLPGSQL;
+
+--Создадим триггер checking_permisson_on_create_playlist
+
+CREATE TRIGGER checking_permisson_on_create_playlist
+BEFORE INSERT ON playlists
+FOR EACH ROW
+EXECUTE FUNCTION checking_user();
+
+--Проверим работу нашего триггера, попробуем создать плейлист от несуществующего пользователя
+
+INSERT INTO playlists (name, creator_id, created_at) VALUES ('new playlist', 101, NOW());
+
+--СУБД выдаст нам ошибку:
+
+ERROR:  Sorry. This user doesnt exists.Rechecking your arguments
+CONTEXT:  PL/pgSQL function checking_user() line 6 at RAISE
+SQL state: P0001

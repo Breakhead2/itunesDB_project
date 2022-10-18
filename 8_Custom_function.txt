@@ -1,0 +1,14 @@
+Напишем функцию, которая находит идентификатор наиболее активного пользователя,
+который прослушал наибольшее количество песен за месяц.
+
+CREATE OR REPLACE FUNCTION most_active_user_for_a_month()
+RETURNS INTEGER AS
+$$
+	SELECT user_id
+	FROM listening_history
+	WHERE date  <= now() AND date >= now() - INTERVAL '30 DAY'
+	GROUP BY user_id
+	ORDER BY COUNT(song_id) DESC
+	LIMIT 1;
+$$
+LANGUAGE SQL;

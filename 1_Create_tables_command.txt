@@ -1,0 +1,110 @@
+--Команда на создание таблицы пользователей:
+
+CREATE TABLE users (
+	id SERIAL PRIMARY KEY,
+	first_name VARCHAR(50) NOT NULL,
+	last_name VARCHAR(50) NOT NULL,
+	email VARCHAR(120) NOT NULL UNIQUE,
+	phone VARCHAR(30) UNIQUE
+);
+
+--Команда на создание таблицы профилей:
+
+CREATE TABLE profiles (
+	user_id INT NOT NULL,
+	photo_filename VARCHAR(50) DEFAULT 'default.png',
+	user_role_id INT NOT NULL,
+	created_at TIMESTAMP,
+	PRIMARY KEY (user_id)
+);
+
+--Команда на создание таблицы ролей:
+
+CREATE TABLE roles (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(10) NOT NULL
+);
+
+--Команда на создание таблицы альбомов:
+
+CREATE TABLE albums (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	author VARCHAR(100) NOT NULL,
+	cover_filename VARCHAR(50) DEFAULT 'no_cover.png',
+	url VARCHAR(100) NOT NULL UNIQUE,
+	realese_data TIMESTAMP,
+	upload_data TIMESTAMP
+);
+
+--Команда на создание таблицы песен:
+
+CREATE TABLE songs (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	singer VARCHAR(100) NOT NULL,
+	genre_id INT NOT NULL,
+	url VARCHAR(100) NOT NULL UNIQUE,
+	listening_counter INT DEFAULT 0
+);
+
+--Команда на создание таблицы жанров:
+
+CREATE TABLE genres (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR (20) NOT NULL
+);
+
+--Команда на создание таблицы подписок:
+
+CREATE TABLE subscriptions (
+	id SERIAL PRIMARY KEY,
+	by_user_id INT NOT NULL,
+	to_user_id INT NOT NULL,
+	signed_at TIMESTAMP
+);
+
+--Команда на создание таблицы плейлистов:
+
+CREATE TABLE playlists (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(50) NOT NULL,
+	creator_id INT NOT NULL,
+	created_at TIMESTAMP
+);
+
+--Команда на создание таблицы связи плейлист-песни
+
+CREATE TABLE playlists_songs (
+	playlist_id INT NOT NULL,
+	song_id INT NOT NULL
+);
+
+--Команда на создание таблицы истории прослушивания:
+
+CREATE TABLE listening_history (
+	user_id INT NOT NULL,
+	song_id INT NOT NULL,
+	date TIMESTAMP
+);
+
+--Команда на создание таблицы связи альбомы-песни:
+
+CREATE TABLE albums_songs (
+	album_id INT NOT NULL,
+	song_id INT NOT NULL
+);
+
+--Команда на создание таблицы связи альбомы-пользователи:
+
+CREATE TABLE albums_users (
+	album_id INT NOT NULL,
+	user_id INT NOT NULL
+);
+
+--Команда на создание таблицы связи песни-пользователи:
+
+CREATE TABLE songs_users (
+	song_id INT NOT NULL,
+	user_id INT NOT NULL
+);

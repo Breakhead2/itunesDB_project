@@ -1,0 +1,33 @@
+–ассмотрим эффективность ранее выполненых сложных запросов с использованием JOIN 
+и попробуем их оптимизировать.
+
+¬ данном случае мы будем разбирать запрос на 10 самых попул€рых песен у пользовател€
+
+ƒл€ начала посмотрим на план построени€ запроса и разберем его.
+¬ыполнив следующую команду:
+
+EXPLAIN SELECT
+	songs.singer as songs_singer,
+	songs.name as songs_name,
+	songs.listening_counter as listening_counter
+	FROM songs_users
+		JOIN songs ON songs_users.song_id = songs.id
+		LEFT JOIN users ON songs_users.user_id = users.id
+	WHERE users.first_name = 'Riley' AND users.last_name = 'Farmer'
+ORDER BY songs.listening_counter DESC
+LIMIT 10;
+
+» увидим древовидную структуру выполнени€ запроса:
+
+ Limit  (cost=6.12..6.12 rows=1 width=38)
+   ->  Sort  (cost=6.12..6.12 rows=1 width=38)
+         Sort Key: songs.listening_counter DESC
+         ->  Nested Loop  (cost=3.66..6.11 rows=1 width=38)
+               ->  Hash Join  (cost=3.51..5.79 rows=1 width=4)
+                     Hash Cond: (songs_users.user_id = users.id)
+                     ->  Seq Scan on songs_users  (cost=0.00..2.00 rows=100 width=8)
+                     ->  Hash  (cost=3.50..3.50 rows=1 width=4)
+                           ->  Seq Scan on users  (cost=0.00..3.50 rows=1 width=4)
+                                 Filter: (((first_name)::text = 'Riley'::text) AND ((last_name)::text = 'Farmer'::text))
+               ->  Index Scan using songs_pkey on songs  (cost=0.14..0.32 rows=1 width=42)
+                     Index Cond: (id = songs_users.song_id)

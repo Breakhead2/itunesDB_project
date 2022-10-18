@@ -1,0 +1,61 @@
+1. Создадим представление список прослушиваемых плейлистов list_of_listening_playlists
+В представлении будем выводить идентификатор плейлиста, количество песен в нем
+и общее количество прослушиваний песен в плейлисте
+
+CREATE VIEW list_of_listening_playlists AS
+SELECT 
+	playlist_id, 
+	COUNT(song_id) as quantity_songs,
+	SUM(songs.listening_counter) as total_listening
+	FROM playlists_songs
+		JOIN songs ON playlists_songs.song_id = songs.id
+GROUP BY playlist_id;
+
+В дальнейшем используя представление list_of_listening_playlists можно создать
+новое представлениеmost_popular_playlists подключив таблицу плейлистов и пользователей
+и вывести информацию о владельце плейлиста, имени плейлиста, кол-во песен в плейлисте,
+общее количество прослушиваний песен и дату создания плейлиста, отсортировав все по количеству
+прослушиваний песен
+
+CREATE VIEW most_popular_playlists AS
+SELECT
+	users.first_name as owner_playlist,
+	playlists.name as playlist_name,
+	quantity_songs,
+	total_listening,
+	playlists.created_at
+	FROM list_of_listening_playlists
+	JOIN playlists ON list_of_listening_playlists.playlist_id = playlists.id
+	LEFT JOIN users ON playlists.creator_id = users.id
+ORDER BY total_listening DESC;
+
+
+
+
+КОД:
+
+CREATE VIEW list_of_listening_playlists AS
+SELECT 
+	playlist_id, 
+	COUNT(song_id) as quantity_songs,
+	SUM(songs.listening_counter) as total_listening
+	FROM playlists_songs
+		JOIN songs ON playlists_songs.song_id = songs.id
+GROUP BY playlist_id;
+
+
+SELECT * FROM list_of_listening_playlists;
+
+CREATE VIEW most_popular_playlists AS
+SELECT
+	users.first_name as owner_playlist,
+	playlists.name as playlist_name,
+	quantity_songs,
+	total_listening,
+	playlists.created_at
+	FROM list_of_listening_playlists
+	JOIN playlists ON list_of_listening_playlists.playlist_id = playlists.id
+	LEFT JOIN users ON playlists.creator_id = users.id
+ORDER BY total_listening DESC;
+
+SELECT * FROM most_popular_playlists;

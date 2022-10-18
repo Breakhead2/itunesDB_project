@@ -1,0 +1,23 @@
+--1. Топ 10 прослушиваемых песен в жанре "рок".
+--Выведем исполнителя, название песни и счетчик прослушиваний
+
+SELECT
+	singer,
+	name as song_name,
+	listening_counter
+	FROM songs
+	WHERE genre_id = (SELECT id FROM genres WHERE name = 'rock')
+ORDER BY listening_counter DESC
+LIMIT 10;
+
+
+--2. История песен пользователя и отсортируем их по дате прослушивания.
+---Выведем идентификатор песни и дату прослушивания
+
+SELECT
+	song_id,
+	date
+	FROM listening_history
+	WHERE user_id = (SELECT id FROM users WHERE first_name = 'Bert' AND last_name = 'Hopkins')
+ORDER BY date DESC
+LIMIT 10;
