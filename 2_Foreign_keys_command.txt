@@ -1,99 +1,99 @@
--- Команды на создание внешних ключей для таблицы профилей
--- Связываем колонку user_id с таблицей пользователей
+п»ї-- РљРѕРјР°РЅРґС‹ РЅР° СЃРѕР·РґР°РЅРёРµ РІРЅРµС€РЅРёС… РєР»СЋС‡РµР№ РґР»СЏ С‚Р°Р±Р»РёС†С‹ РїСЂРѕС„РёР»РµР№
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ user_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 ALTER TABLE profiles
 ADD CONSTRAINT profiles_user_id_fk
 FOREIGN KEY (user_id)
 REFERENCES users (id);
 
---Связываем колонку user_role_id с таблицей roles
+--РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ user_role_id СЃ С‚Р°Р±Р»РёС†РµР№ roles
 ALTER TABLE profiles
 ADD CONSTRAINT profiles_user_role_id_fk
 FOREIGN KEY (user_role_id)
 REFERENCES roles (id);
 
--- Команда на создание внешнего ключа для таблицы песни
--- Связываем колонку genre_id c таблицей жанров
+-- РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ РІРЅРµС€РЅРµРіРѕ РєР»СЋС‡Р° РґР»СЏ С‚Р°Р±Р»РёС†С‹ РїРµСЃРЅРё
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ genre_id c С‚Р°Р±Р»РёС†РµР№ Р¶Р°РЅСЂРѕРІ
 ALTER TABLE songs
 ADD CONSTRAINT songs_genre_id_fk
 FOREIGN KEY (genre_id)
 REFERENCES genres (id);
 
--- Команды на создание внешних ключей для таблицы подписки
--- Связываем колонку by_user_id с таблицей пользователей
+-- РљРѕРјР°РЅРґС‹ РЅР° СЃРѕР·РґР°РЅРёРµ РІРЅРµС€РЅРёС… РєР»СЋС‡РµР№ РґР»СЏ С‚Р°Р±Р»РёС†С‹ РїРѕРґРїРёСЃРєРё
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ by_user_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 ALTER TABLE subscriptions
 ADD CONSTRAINT subscriptions_by_user_id_fk
 FOREIGN KEY (by_user_id)
 REFERENCES users (id);
 
--- Связываем колонку to_user_id с таблицей пользователей
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ to_user_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 ALTER TABLE subscriptions
 ADD CONSTRAINT subscriptions_to_user_id_fk
 FOREIGN KEY (to_user_id)
 REFERENCES users (id);
 
--- Команда на создание внешнего ключа для таблицы плейлисты
--- Связываем колонку creator_id с таблицей пользователей
+-- РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ РІРЅРµС€РЅРµРіРѕ РєР»СЋС‡Р° РґР»СЏ С‚Р°Р±Р»РёС†С‹ РїР»РµР№Р»РёСЃС‚С‹
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ creator_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 ALTER TABLE playlists
 ADD CONSTRAINT playlists_creator_id_fk
 FOREIGN KEY (creator_id)
 REFERENCES users (id);
 
--- Команды на создание внешних ключей для таблицы связи плейлисты-песни
--- Связываем колонку playlist_id с таблицей плейлистов
+-- РљРѕРјР°РЅРґС‹ РЅР° СЃРѕР·РґР°РЅРёРµ РІРЅРµС€РЅРёС… РєР»СЋС‡РµР№ РґР»СЏ С‚Р°Р±Р»РёС†С‹ СЃРІСЏР·Рё РїР»РµР№Р»РёСЃС‚С‹-РїРµСЃРЅРё
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ playlist_id СЃ С‚Р°Р±Р»РёС†РµР№ РїР»РµР№Р»РёСЃС‚РѕРІ
 ALTER TABLE playlists_songs
 ADD CONSTRAINT playlists_songs_playlist_id_fk
 FOREIGN KEY (playlist_id)
 REFERENCES playlists (id);
--- Связываем колонку song_id с таблицей песен
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ song_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРµСЃРµРЅ
 ALTER TABLE playlists_songs
 ADD CONSTRAINT playlists_songs_song_id_fk
 FOREIGN KEY (song_id)
 REFERENCES songs (id);
 
--- Команды на создание внешних ключей для таблицы истории прослушивания
--- Связываем колонку user_id с таблицей пользователей
+-- РљРѕРјР°РЅРґС‹ РЅР° СЃРѕР·РґР°РЅРёРµ РІРЅРµС€РЅРёС… РєР»СЋС‡РµР№ РґР»СЏ С‚Р°Р±Р»РёС†С‹ РёСЃС‚РѕСЂРёРё РїСЂРѕСЃР»СѓС€РёРІР°РЅРёСЏ
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ user_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 ALTER TABLE listening_history
 ADD CONSTRAINT listening_history_user_id_fk
 FOREIGN KEY (user_id)
 REFERENCES users (id);
--- Связываем колонку song_id с таблицей песен
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ song_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРµСЃРµРЅ
 ALTER TABLE listening_history
 ADD CONSTRAINT listening_history_song_id_fk
 FOREIGN KEY (song_id)
 REFERENCES songs (id);
 
--- Команды на создание внешних ключей для таблицы связи альбомы-песни
--- Связываем колонку album_id с таблицей альбомов
+-- РљРѕРјР°РЅРґС‹ РЅР° СЃРѕР·РґР°РЅРёРµ РІРЅРµС€РЅРёС… РєР»СЋС‡РµР№ РґР»СЏ С‚Р°Р±Р»РёС†С‹ СЃРІСЏР·Рё Р°Р»СЊР±РѕРјС‹-РїРµСЃРЅРё
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ album_id СЃ С‚Р°Р±Р»РёС†РµР№ Р°Р»СЊР±РѕРјРѕРІ
 ALTER TABLE albums_songs
 ADD CONSTRAINT albums_songs_album_id_fk
 FOREIGN KEY (album_id)
 REFERENCES albums (id);
--- Связываем колонку song_id с таблицей песен
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ song_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРµСЃРµРЅ
 ALTER TABLE albums_songs
 ADD CONSTRAINT albums_songs_song_id_fk
 FOREIGN KEY (song_id)
 REFERENCES songs (id);
 
--- Команды на создание внешних ключей для таблицы связи альбомы-пользователи
--- Связываем колонку album_id с таблицей альбомов
+-- РљРѕРјР°РЅРґС‹ РЅР° СЃРѕР·РґР°РЅРёРµ РІРЅРµС€РЅРёС… РєР»СЋС‡РµР№ РґР»СЏ С‚Р°Р±Р»РёС†С‹ СЃРІСЏР·Рё Р°Р»СЊР±РѕРјС‹-РїРѕР»СЊР·РѕРІР°С‚РµР»Рё
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ album_id СЃ С‚Р°Р±Р»РёС†РµР№ Р°Р»СЊР±РѕРјРѕРІ
 ALTER TABLE albums_users
 ADD CONSTRAINT albums_users_album_id_fk
 FOREIGN KEY (album_id)
 REFERENCES albums (id);
--- Связываем колонку user_id с таблицей пользователей
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ user_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 ALTER TABLE albums_users
 ADD CONSTRAINT albums_users_user_id_fk
 FOREIGN KEY (user_id)
 REFERENCES users (id);
 
--- Команды на создание внешних ключей для таблицы связи песни-пользователи
--- Связываем колонку song_id с таблицей песен
+-- РљРѕРјР°РЅРґС‹ РЅР° СЃРѕР·РґР°РЅРёРµ РІРЅРµС€РЅРёС… РєР»СЋС‡РµР№ РґР»СЏ С‚Р°Р±Р»РёС†С‹ СЃРІСЏР·Рё РїРµСЃРЅРё-РїРѕР»СЊР·РѕРІР°С‚РµР»Рё
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ song_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРµСЃРµРЅ
 ALTER TABLE songs_users
 ADD CONSTRAINT songs_users_song_id_fk
 FOREIGN KEY (song_id)
 REFERENCES songs (id);
 
--- Связываем колонку user_id с таблицей пользователей
+-- РЎРІСЏР·С‹РІР°РµРј РєРѕР»РѕРЅРєСѓ user_id СЃ С‚Р°Р±Р»РёС†РµР№ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 ALTER TABLE songs_users
 ADD CONSTRAINT songs_users_user_id_fk
 FOREIGN KEY (user_id)

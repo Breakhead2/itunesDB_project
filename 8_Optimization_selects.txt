@@ -1,12 +1,12 @@
-–‡ÒÒÏÓÚËÏ ˝ÙÙÂÍÚË‚ÌÓÒÚ¸ ‡ÌÂÂ ‚˚ÔÓÎÌÂÌ˚ı ÒÎÓÊÌ˚ı Á‡ÔÓÒÓ‚ Ò ËÒÔÓÎ¸ÁÓ‚‡ÌËÂÏ JOIN 
-Ë ÔÓÔÓ·ÛÂÏ Ëı ÓÔÚËÏËÁËÓ‚‡Ú¸.
+Ôªø–†–∞—Å—Å–º–æ—Ç—Ä–∏–º —ç—Ñ—Ñ–µ–∫—Ç–∏–≤–Ω–æ—Å—Ç—å —Ä–∞–Ω–µ–µ –≤—ã–ø–æ–ª–Ω–µ–Ω—ã—Ö —Å–ª–æ–∂–Ω—ã—Ö –∑–∞–ø—Ä–æ—Å–æ–≤ —Å –∏—Å–ø–æ–ª—å–∑–æ–≤–∞–Ω–∏–µ–º JOIN 
+–∏ –ø–æ–ø—Ä–æ–±—É–µ–º –∏—Ö –æ–ø—Ç–∏–º–∏–∑–∏—Ä–æ–≤–∞—Ç—å.
 
-¬ ‰‡ÌÌÓÏ ÒÎÛ˜‡Â Ï˚ ·Û‰ÂÏ ‡Á·Ë‡Ú¸ Á‡ÔÓÒ Ì‡ 10 Ò‡Ï˚ı ÔÓÔÛÎˇ˚ı ÔÂÒÂÌ Û ÔÓÎ¸ÁÓ‚‡ÚÂÎˇ
+–í –¥–∞–Ω–Ω–æ–º —Å–ª—É—á–∞–µ –º—ã –±—É–¥–µ–º —Ä–∞–∑–±–∏—Ä–∞—Ç—å –∑–∞–ø—Ä–æ—Å –Ω–∞ 10 —Å–∞–º—ã—Ö –ø–æ–ø—É–ª—è—Ä—ã—Ö –ø–µ—Å–µ–Ω —É –ø–æ–ª—å–∑–æ–≤–∞—Ç–µ–ª—è
 
-ƒÎˇ Ì‡˜‡Î‡ ÔÓÒÏÓÚËÏ Ì‡ ÔÎ‡Ì ÔÓÒÚÓÂÌËˇ Á‡ÔÓÒ‡ Ë ‡Á·ÂÂÏ Â„Ó.
-¬˚ÔÓÎÌË‚ ÒÎÂ‰Û˛˘Û˛ ÍÓÏ‡Ì‰Û:
+–î–ª—è –Ω–∞—á–∞–ª–∞ –ø–æ—Å–º–æ—Ç—Ä–∏–º –Ω–∞ –∞–∫—É—Ç–∞–ª—å–Ω—ã–π –ø–ª–∞–Ω –ø–æ—Å—Ç—Ä–æ–µ–Ω–∏—è –∑–∞–ø—Ä–æ—Å–∞ –∏ —Ä–∞–∑–±–µ—Ä–µ–º –µ–≥–æ.
+–í—ã–ø–æ–ª–Ω–∏–≤ —Å–ª–µ–¥—É—é—â—É—é –∫–æ–º–∞–Ω–¥—É:
 
-EXPLAIN SELECT
+EXPLAIN ANALYZE SELECT
 	songs.singer as songs_singer,
 	songs.name as songs_name,
 	songs.listening_counter as listening_counter
@@ -17,17 +17,33 @@ EXPLAIN SELECT
 ORDER BY songs.listening_counter DESC
 LIMIT 10;
 
-» Û‚Ë‰ËÏ ‰Â‚Ó‚Ë‰ÌÛ˛ ÒÚÛÍÚÛÛ ‚˚ÔÓÎÌÂÌËˇ Á‡ÔÓÒ‡:
+–ò —É–≤–∏–¥–∏–º –¥—Ä–µ–≤–æ–≤–∏–¥–Ω—É—é —Å—Ç—Ä—É–∫—Ç—É—Ä—É –≤—ã–ø–æ–ª–Ω–µ–Ω–∏—è –∑–∞–ø—Ä–æ—Å–∞:
 
- Limit  (cost=6.12..6.12 rows=1 width=38)
-   ->  Sort  (cost=6.12..6.12 rows=1 width=38)
+                                                             QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=6.12..6.12 rows=1 width=38) (actual time=0.099..0.101 rows=3 loops=1)
+   ->  Sort  (cost=6.12..6.12 rows=1 width=38) (actual time=0.098..0.100 rows=3 loops=1)
          Sort Key: songs.listening_counter DESC
-         ->  Nested Loop  (cost=3.66..6.11 rows=1 width=38)
-               ->  Hash Join  (cost=3.51..5.79 rows=1 width=4)
+         Sort Method: quicksort  Memory: 25kB
+         ->  Nested Loop  (cost=3.66..6.11 rows=1 width=38) (actual time=0.070..0.093 rows=3 loops=1)
+               ->  Hash Join  (cost=3.51..5.79 rows=1 width=4) (actual time=0.062..0.079 rows=3 loops=1)
                      Hash Cond: (songs_users.user_id = users.id)
-                     ->  Seq Scan on songs_users  (cost=0.00..2.00 rows=100 width=8)
-                     ->  Hash  (cost=3.50..3.50 rows=1 width=4)
-                           ->  Seq Scan on users  (cost=0.00..3.50 rows=1 width=4)
+                     ->  Seq Scan on songs_users  (cost=0.00..2.00 rows=100 width=8) (actual time=0.007..0.015 rows=100 loops=1)
+                     ->  Hash  (cost=3.50..3.50 rows=1 width=4) (actual time=0.034..0.034 rows=1 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                           ->  Seq Scan on users  (cost=0.00..3.50 rows=1 width=4) (actual time=0.011..0.030 rows=1 loops=1)
                                  Filter: (((first_name)::text = 'Riley'::text) AND ((last_name)::text = 'Farmer'::text))
-               ->  Index Scan using songs_pkey on songs  (cost=0.14..0.32 rows=1 width=42)
+                                 Rows Removed by Filter: 99
+               ->  Index Scan using songs_pkey on songs  (cost=0.14..0.32 rows=1 width=42) (actual time=0.003..0.003 rows=1 loops=3)
                      Index Cond: (id = songs_users.song_id)
+ Planning Time: 0.394 ms
+ Execution Time: 0.138 ms
+
+
+–°–æ–∑–¥–∞–Ω–∏–µ —Å–æ—Å—Ç–∞–≤–Ω–æ–≥–æ –∏–Ω–¥–∞–∫—Å–∞ –Ω–∞ –∫–æ–ª–æ–Ω–∫–∏ first_name –∏ last_name —Ç–∞–±–ª–∏—Ü—ã –ü–æ–ª—å–∑–æ–≤–∞—Ç–µ–ª–∏:
+
+CREATE INDEX users_first_name_last_name_idx ON users (first_name, last_name);
+
+
+
+

@@ -1,4 +1,4 @@
---Команда на создание таблицы пользователей:
+п»ї--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№:
 
 CREATE TABLE users (
 	id SERIAL PRIMARY KEY,
@@ -8,7 +8,7 @@ CREATE TABLE users (
 	phone VARCHAR(30) UNIQUE
 );
 
---Команда на создание таблицы профилей:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РїСЂРѕС„РёР»РµР№:
 
 CREATE TABLE profiles (
 	user_id INT NOT NULL,
@@ -18,14 +18,14 @@ CREATE TABLE profiles (
 	PRIMARY KEY (user_id)
 );
 
---Команда на создание таблицы ролей:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ СЂРѕР»РµР№:
 
 CREATE TABLE roles (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(10) NOT NULL
 );
 
---Команда на создание таблицы альбомов:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ Р°Р»СЊР±РѕРјРѕРІ:
 
 CREATE TABLE albums (
 	id SERIAL PRIMARY KEY,
@@ -37,7 +37,7 @@ CREATE TABLE albums (
 	upload_data TIMESTAMP
 );
 
---Команда на создание таблицы песен:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РїРµСЃРµРЅ:
 
 CREATE TABLE songs (
 	id SERIAL PRIMARY KEY,
@@ -48,14 +48,14 @@ CREATE TABLE songs (
 	listening_counter INT DEFAULT 0
 );
 
---Команда на создание таблицы жанров:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ Р¶Р°РЅСЂРѕРІ:
 
 CREATE TABLE genres (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR (20) NOT NULL
 );
 
---Команда на создание таблицы подписок:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РїРѕРґРїРёСЃРѕРє:
 
 CREATE TABLE subscriptions (
 	id SERIAL PRIMARY KEY,
@@ -64,7 +64,7 @@ CREATE TABLE subscriptions (
 	signed_at TIMESTAMP
 );
 
---Команда на создание таблицы плейлистов:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РїР»РµР№Р»РёСЃС‚РѕРІ:
 
 CREATE TABLE playlists (
 	id SERIAL PRIMARY KEY,
@@ -73,14 +73,14 @@ CREATE TABLE playlists (
 	created_at TIMESTAMP
 );
 
---Команда на создание таблицы связи плейлист-песни
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ СЃРІСЏР·Рё РїР»РµР№Р»РёСЃС‚-РїРµСЃРЅРё
 
 CREATE TABLE playlists_songs (
 	playlist_id INT NOT NULL,
 	song_id INT NOT NULL
 );
 
---Команда на создание таблицы истории прослушивания:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ РёСЃС‚РѕСЂРёРё РїСЂРѕСЃР»СѓС€РёРІР°РЅРёСЏ:
 
 CREATE TABLE listening_history (
 	user_id INT NOT NULL,
@@ -88,21 +88,21 @@ CREATE TABLE listening_history (
 	date TIMESTAMP
 );
 
---Команда на создание таблицы связи альбомы-песни:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ СЃРІСЏР·Рё Р°Р»СЊР±РѕРјС‹-РїРµСЃРЅРё:
 
 CREATE TABLE albums_songs (
 	album_id INT NOT NULL,
 	song_id INT NOT NULL
 );
 
---Команда на создание таблицы связи альбомы-пользователи:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ СЃРІСЏР·Рё Р°Р»СЊР±РѕРјС‹-РїРѕР»СЊР·РѕРІР°С‚РµР»Рё:
 
 CREATE TABLE albums_users (
 	album_id INT NOT NULL,
 	user_id INT NOT NULL
 );
 
---Команда на создание таблицы связи песни-пользователи:
+--РљРѕРјР°РЅРґР° РЅР° СЃРѕР·РґР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ СЃРІСЏР·Рё РїРµСЃРЅРё-РїРѕР»СЊР·РѕРІР°С‚РµР»Рё:
 
 CREATE TABLE songs_users (
 	song_id INT NOT NULL,
