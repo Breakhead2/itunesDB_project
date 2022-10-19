@@ -1,4 +1,4 @@
-<h1 align="center">База данных музыкального стриминогового сервиса</h1>
+<h1 align="center">База данных музыкального стримингового сервиса</h1>
 
 <p align="center">
 
@@ -11,7 +11,7 @@
 </p>
 
 **Аннотация:**
-_Основной целью данного проекта было создание базы данных для музыкального стримингового сервиса, чтобы автоматизировать процессы регистрации пользователей, прослушивания музыки, её сохранения и поиска новой, а также систематизации всех данных, требуемых для этих процессов. В качестве прототипа для данной работы послужил музыкальный стриминового сервис **[iTunes](https://www.apple.com/ru/itunes/)**._
+_Основной целью данного проекта было создание базы данных для музыкального стримингового сервиса, чтобы автоматизировать процессы регистрации пользователей, прослушивания музыки, её сохранения и поиска новой, а также систематизации всех данных, требуемых для этих процессов. В качестве прототипа для данной работы послужил музыкальный стриминговый сервис **[iTunes](https://www.apple.com/ru/itunes/)**._
 
 ---
 
@@ -22,7 +22,7 @@ _Основной целью данного проекта было создан
 
 ## Анализ бизнес-логики
 
-Данный музыкальный стрименговый сервис должен давать возможность зарегистрироваться пользователям, слушать музыку, сохранять её в своих плейлистах, находить новую, а также загружать свои собственные альбомы и треки. Для этого в базе данных приложения необходимо иметь информацию о пользователях, альбомах и песнях. Поэтому создадим необходимые таблицы.
+Данный музыкальный стриминговый сервис должен давать возможность зарегистрироваться пользователям, слушать музыку, сохранять её в своих плейлистах, находить новую, а также загружать свои собственные альбомы и треки. Для этого в базе данных приложения необходимо иметь информацию о пользователях, альбомах и песнях. Поэтому создадим необходимые таблицы.
 
 ## Создание таблиц
 
@@ -461,7 +461,7 @@ SELECT
    songs.listening_counter as listening_counter
    FROM songs_users
       JOIN songs ON songs_users.song_id = songs.id
-      LEFT JOIN users ON songs_users.user_id = users.id
+      JOIN users ON songs_users.user_id = users.id
    WHERE users.first_name = 'Riley' AND users.last_name = 'Farmer'
 ORDER BY songs.listening_counter DESC
 LIMIT 10;
@@ -484,7 +484,7 @@ SELECT
    albums.realese_data as realese_data
    FROM albums_users
       JOIN albums ON albums_users.album_id = albums.id
-      LEFT JOIN users ON albums_users.user_id = users.id
+      JOIN users ON albums_users.user_id = users.id
    WHERE users.first_name = 'Riley' AND users.last_name = 'Farmer'
 ORDER BY albums.realese_data DESC
 LIMIT 10;
@@ -550,7 +550,7 @@ SELECT
    playlists.created_at
    FROM list_of_listening_playlists
       JOIN playlists ON list_of_listening_playlists.playlist_id = playlists.id
-      LEFT JOIN users ON playlists.creator_id = users.id
+      JOIN users ON playlists.creator_id = users.id
 ORDER BY total_listening DESC;
 ```
 
@@ -657,7 +657,7 @@ EXPLAIN ANALYZE SELECT
 	songs.listening_counter as listening_counter
 	FROM songs_users
 		JOIN songs ON songs_users.song_id = songs.id
-		LEFT JOIN users ON songs_users.user_id = users.id
+		JOIN users ON songs_users.user_id = users.id
 	WHERE users.first_name = 'Riley' AND users.last_name = 'Farmer'
 ORDER BY songs.listening_counter DESC
 LIMIT 10;

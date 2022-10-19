@@ -26,7 +26,7 @@ SELECT
 	playlists.created_at
 	FROM list_of_listening_playlists
 	JOIN playlists ON list_of_listening_playlists.playlist_id = playlists.id
-	LEFT JOIN users ON playlists.creator_id = users.id
+	JOIN users ON playlists.creator_id = users.id
 ORDER BY total_listening DESC;
 
 
@@ -55,7 +55,7 @@ SELECT
 	playlists.created_at
 	FROM list_of_listening_playlists
 	JOIN playlists ON list_of_listening_playlists.playlist_id = playlists.id
-	LEFT JOIN users ON playlists.creator_id = users.id
+	JOIN users ON playlists.creator_id = users.id
 ORDER BY total_listening DESC;
 
 SELECT * FROM most_popular_playlists;

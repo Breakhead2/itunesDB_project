@@ -6,7 +6,7 @@ SELECT
 	songs.listening_counter as listening_counter
 	FROM songs_users
 		JOIN songs ON songs_users.song_id = songs.id
-		LEFT JOIN users ON songs_users.user_id = users.id
+		JOIN users ON songs_users.user_id = users.id
 	WHERE users.first_name = 'Riley' AND users.last_name = 'Farmer'
 ORDER BY songs.listening_counter DESC
 LIMIT 10;
@@ -19,7 +19,7 @@ SELECT
 	albums.realese_data as realese_data
 	FROM albums_users
 		JOIN albums ON albums_users.album_id = albums.id
-		LEFT JOIN users ON albums_users.user_id = users.id
+		JOIN users ON albums_users.user_id = users.id
 	WHERE users.first_name = 'Riley' AND users.last_name = 'Farmer'
 ORDER BY albums.realese_data DESC
 LIMIT 10;
